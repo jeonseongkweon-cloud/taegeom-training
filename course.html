@@ -1,0 +1,22 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAEGEOM Course v1.5</title><link rel="stylesheet" href="style.css"><style>
+.courseWrap{padding:60px 7vw}.back{color:#d9b34e;text-decoration:none}.courseHero{margin:35px 0;padding:35px;border:1px solid #2d3946;background:#0c131c}.courseHero h1{font-size:42px;margin:8px 0}.courseHero p{color:#9aa7b5;line-height:1.8}.progress{height:8px;background:#202b36;border-radius:10px;overflow:hidden}.progress i{display:block;height:100%;width:8%;background:#d9b34e}.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.module{padding:22px;border:1px solid #293644;background:#0a1018;min-height:175px}.module.done{border-color:#8e7334}.module.lock{opacity:.48}.module small{color:#d9b34e}.module h3{margin:12px 0}.module p{color:#8996a4;font-size:13px;line-height:1.6}.badge{display:inline-block;padding:5px 8px;border:1px solid #43515e;border-radius:20px;font-size:10px;color:#9ba7b4}.notice{margin-top:25px;padding:20px;border-left:3px solid #d9b34e;background:#101720;color:#aab5c0;line-height:1.7}@media(max-width:850px){.modules{grid-template-columns:1fr}}
+</style></head><body>
+<header class="top"><div class="brand"><span class="mark">⚔</span><div><b>TAEGEOM</b><small>DIGITAL TRAINING ACADEMY</small></div></div><span class="version">v1.5 · COURSE ARCHITECTURE</span></header>
+<main class="courseWrap"><a class="back" href="index.html">← Academy Home</a>
+<section class="courseHero"><small id="kind">TRAINING PATH</small><h1 id="title">과정</h1><p id="desc"></p><div class="progress"><i></i></div><p><b>현재 구축도 8%</b> · 교육구조 완성 / 공식 사진·영상·시험 콘텐츠 순차 탑재</p></section>
+<div class="modules" id="modules"></div>
+<div class="notice"><b>OPEN TO LEARN · CERTIFIED TO TEACH</b><br>현재 페이지는 전체 교육체계를 미리 구축한 v1.5 프레임워크입니다. 공개 수련과 공식 지도자 인증은 구분되며, 잠긴 단계는 선행과정·회원등록·공식 인증 조건에 따라 향후 순차 개방됩니다.</div>
+</main>
+<script>
+const data={
+starter:["처음 배우는 태권검도","무술 경험이 없는 수련자를 위한 완전 기초과정","오리엔테이션|안전수칙|검의 명칭과 이해|검 잡는 법|기본 준비자세|정면베기 입문|기초 막기|기초 찌르기|기초 이동|Level 1 평가"],
+general:["일반 수련과정","남녀노소 누구나 단계적으로 반복 수련하는 Level 1–10 과정","기본자세 점검|초승달베기|반달베기|보름달베기|좌·우 15° 베기|사선 65° 내려베기|사선 올려베기|찌르기|3대 막기|이동과 거리|연속동작|반응훈련|콤보|Level 1–10 평가"],
+tkd:["태권도 지도자 Fast Track","태권도 4단 이상 지도자의 기존 신체능력과 지도경험을 활용하는 압축 전문과정","태권검도 체계 이해|검 안전·그립|3대 정면베기 비교|15°·65° 검선|찌르기·막기|보법 전환|태권도와 연결 원리|수업 적용법|Fast Track 실기평가|지도자 과정 진입"],
+instructor:["공식 지도자 과정","WTKF 공식 지도 역량을 위한 교수법·평가·안전·실습 과정","지도자 윤리와 정책|표준기술론|초보자 교수법|아동·성인 지도법|오류진단과 교정|안전관리|수업설계|심사·평가기준|지도실습|이론시험|실기시험|공식 인증"],
+academy:["온라인 세미나 · Academy","거리와 국가의 제약을 줄이는 창시자 기준 온라인 연수체계","창시자 특강|기본기 세미나|달베기 집중연수|검선 집중연수|방어·찌르기 연수|이동·연결 세미나|지도법 워크숍|과제제출|온라인 평가|오프라인 교정 연계"],
+renewal:["지도자 보수교육","공식 지도자의 기술표준 유지와 업데이트를 위한 계속교육","연간 기술점검|신규 커리큘럼|오류교정 사례|안전 업데이트|지도사례 연구|지역 세미나|오프라인 교정|활동기록|보수교육 평가|인증 갱신"]
+};
+const p=new URLSearchParams(location.search).get("track")||"starter", d=data[p]||data.starter;
+title.textContent=d[0];desc.textContent=d[1];kind.textContent=p==="instructor"?"CERTIFICATION PATH":"TRAINING PATH";
+modules.innerHTML=d[2].split("|").map((x,i)=>`<article class="module ${i? "lock":"done"}"><small>MODULE ${String(i+1).padStart(2,"0")}</small><h3>${x}</h3><p>${i?"콘텐츠 슬롯 준비 완료. 공식 사진·영상·설명·평가자료가 탑재되면 선행단계 완료 후 개방됩니다.":"첫 콘텐츠를 탑재할 준비가 된 시작 모듈입니다."}</p><span class="badge">${i?"CONTENT READY · LOCKED":"FOUNDATION · OPEN"}</span></article>`).join("");
+</script></body></html>

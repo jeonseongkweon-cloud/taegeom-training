@@ -1,22 +1,27 @@
-# TAEGEOM Digital Training System v1.4
+# TAEGEOM Digital Training Academy v1.5 — ACADEMY FRAMEWORK
 
-태권검도 수련생이 혼자서 베기·막기·찌르기·반응훈련을 반복하고, 점수·정확도·수련시간·개인등급을 기록할 수 있도록 만든 웹 기반 디지털 트레이닝 시스템입니다.
+## Release concept
+**Build the academy first, fill each room with official content next.**
 
-## v1.4 핵심 업데이트
-- 정면베기 3종의 **치켜드는 준비각도**를 측면(SIDE VIEW) 중심으로 집중 훈련
-  - 초승달베기: 이마 위 약 45° 준비
-  - 반달베기: 머리 위 수평 180° 준비
-  - 보름달베기: 왼손을 귀까지 최대한 올리고 검이 어깨·목덜미에 닿을 만큼 깊은 준비
-- 초승달·반달·보름달 측면 비교 카드와 코칭 문구
-- 기술별 합격점수 + 10회 이상 수행 시 자동 기술 인증
-- DAILY MISSION: 정확 수행 30회 / 정확도 80% / 수련 5분
-- 개인 수련등급 LEVEL 1~10 및 TRAINING XP
-- 누적 합격 기술 수 표시
-- 개인 디지털 수련 인증카드 PNG 저장
-- 기존 검선·반응·콤보·기록 기능 유지
+v1.5 restructures the project from a single training screen into a global web-based education architecture.
 
-## 설치
-GitHub 저장소 최상위에 이 폴더 안의 파일과 `assets` 폴더를 그대로 업로드하면 됩니다. GitHub Pages는 `main / (root)`를 사용합니다.
+### Training paths
+1. Beginner / no martial arts experience
+2. General Level 1–10 training
+3. Taekwondo 4th Dan+ Fast Track
+4. Official Instructor Course
+5. Online Seminar / Academy
+6. Instructor Continuing Education
 
-## 주의
-현재 v1.4의 준비각도 판정은 **시각 가이드와 수련기록 중심**입니다. 실제 검의 각도 자동 측정은 향후 스마트폰 자이로/가속도 센서 연동 버전에서 구현할 수 있습니다.
+### Core curriculum rooms
+Foundation / Cutting / Defense & Thrust / Movement / Reaction / Instructor / Certification / Continuing Education
+
+### Policy
+**OPEN TO LEARN · CERTIFIED TO TEACH**
+Learning and personal practice can be open, while official teaching, certification, and use of WTKF identity are governed separately.
+
+### Next content
+Official front/side photos, slow-motion demonstrations, normal-speed demonstrations, technique explanations, assessments, and later sensor-based angle/speed/path analysis.
+
+Founder & System Developer: JEON SEONG KWEON
+Version: 1.5
