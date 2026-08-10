@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TAEGEOM Course · v1.6</title><link rel="stylesheet" href="academy.css">
+<title>TAEGEOM Course · v1.7</title><link rel="stylesheet" href="academy.css">
 <style>
 .course{padding:55px 7vw}.back{color:#e0b85b;text-decoration:none}.course-head{margin:30px 0;padding:34px;border:1px solid var(--line);background:#0c1117}
 .course-head h1{font-size:clamp(34px,5vw,54px);margin:8px 0}.course-head p{color:#9ca5ae;line-height:1.8;max-width:900px}.progress{height:8px;background:#252d35;border-radius:10px;overflow:hidden}.progress i{display:block;width:8%;height:100%;background:#d8ad4d}
 .modules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.module{min-height:190px;padding:22px;border:1px solid #2c343d;background:#0b1016;position:relative}.module.open{border-color:#967532}.module.lock{opacity:.55}.module small{color:#d9ae4e}.module h3{margin:13px 0}.module p{font-size:13px;color:#89939d;line-height:1.65}.tag{position:absolute;bottom:18px;font-size:10px;border:1px solid #3d4650;border-radius:15px;padding:5px 8px;color:#9ba4ad}.notice{margin-top:24px;padding:20px;border-left:3px solid #d9ae4e;background:#10161d;color:#a4adb6;line-height:1.75}
 @media(max-width:850px){.modules{grid-template-columns:1fr}}
-</style></head><body>
-<header class="academy-top"><a class="home" href="academy.html"><img src="assets/wtkf-logo.webp"><span><b>TAEGEOM</b><small>COURSE ARCHITECTURE</small></span></a><nav><a href="index.html">메인</a><a href="training.html">실제 수련장</a></nav><span class="ver">v1.6</span></header>
+</style><link rel="stylesheet" href="i18n.css">
+</head><body>
+<header class="academy-top"><a class="home" href="academy.html"><img src="assets/wtkf-logo.webp"><span><b>TAEGEOM</b><small>COURSE ARCHITECTURE</small></span></a><nav><a href="index.html">메인</a><a href="training.html">실제 수련장</a></nav><span class="ver">v1.7</span></header>
 <main class="course"><a class="back" href="academy.html">← Academy 전체 과정</a>
 <section class="course-head"><small id="kind">TRAINING PATH</small><h1 id="title">교육과정</h1><p id="desc"></p><div class="progress"><i></i></div><p><b>프레임워크 구축 완료</b> · 첫 모듈부터 공식 사진·영상·교재·평가 콘텐츠를 순차 탑재합니다.</p></section>
 <div id="modules" class="modules"></div>
@@ -27,4 +28,5 @@ const key=new URLSearchParams(location.search).get("track")||"starter", d=course
 document.getElementById("title").textContent=d[0];document.getElementById("desc").textContent=d[1];
 document.getElementById("kind").textContent=key==="instructor"?"CERTIFICATION PATH":"TRAINING PATH";
 document.getElementById("modules").innerHTML=d[2].split("|").map((x,i)=>`<article class="module ${i===0?"open":"lock"}"><small>MODULE ${String(i+1).padStart(2,"0")}</small><h3>${x}</h3><p>${i===0?"공식 콘텐츠를 가장 먼저 채울 시작 모듈입니다. 사진·영상·설명·평가자료를 연결할 준비가 되어 있습니다.":"콘텐츠 슬롯 준비 완료. 앞 단계 완료 후 개방되는 구조로 설계했습니다."}</p><span class="tag">${i===0?"OPEN · CONTENT SLOT":"READY · LOCKED"}</span></article>`).join("");
-</script></body></html>
+</script><script src="i18n.js"></script>
+</body></html>

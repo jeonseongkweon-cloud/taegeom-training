@@ -33,3 +33,5 @@ footer{min-height:130px;border-top:1px solid var(--line);display:flex;align-item
 .academy-preview-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
 @media(max-width:980px){.academy-preview-grid{grid-template-columns:1fr 1fr}.policy-band{grid-template-columns:1fr}.policy-band>div{border-right:0;border-bottom:1px solid var(--line)}}
 @media(max-width:620px){.academy-preview{padding:70px 20px}.academy-preview-grid{grid-template-columns:1fr}}
+
+.global20-badge{display:inline-block;margin-bottom:12px;padding:8px 12px;border:1px solid rgba(221,176,72,.42);border-radius:20px;color:#ffe28d;background:rgba(198,145,34,.08);font-size:10px;font-weight:900;letter-spacing:.12em}
