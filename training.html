@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090d14" />
+  <title>TAEGEOM Digital Training System v1.2 · Training</title>
+  <link rel="stylesheet" href="training.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">⚔</div>
+      <div>
+        <div class="eyebrow">TAEGEOM DIGITAL TRAINING</div>
+        <h1>태권검도 디지털 트레이닝 시스템</h1>
+        <p>검선을 보고 · 정확히 반복하고 · 순간에 반응하고 · 기록한다</p>
+      </div>
+      <div class="training-nav"><a href="index.html">← 메인</a><span class="version">v1.2</span></div>
+    </div>
+    <div class="stats-strip">
+      <div><span id="totalTime">0분</span><small>누적 수련시간</small></div>
+      <div><span id="totalCount">0회</span><small>누적 수행횟수</small></div>
+      <div><span id="bestScore">0점</span><small>최고 점수</small></div>
+      <div><span id="streak">0회</span><small>오늘 수행</small></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel menu-panel">
+      <div class="panel-title"><h2>훈련 선택</h2><span>TRAINING</span></div>
+      <div class="cards" id="trainingCards"></div>
+
+      <div class="option-box" id="variantBox">
+        <label>세부 기술</label>
+        <div id="variantButtons" class="choice-grid"></div>
+      </div>
+
+      <div class="level-box">
+        <label for="level">검선 난이도</label>
+        <select id="level">
+          <option value="beginner">초급 · 검선 선명</option>
+          <option value="intermediate">중급 · 검선 반투명</option>
+          <option value="advanced">고급 · 시작·도착점 위주</option>
+        </select>
+      </div>
+      <div class="tip-box">TIP · <b>Space</b> 시작/종료 · <b>↑</b> 정확 수행 · <b>↓</b> 실수 기록</div>
+    </section>
+
+    <section class="panel arena-panel">
+      <div class="arena-head">
+        <div>
+          <small>현재 훈련</small>
+          <h2 id="currentTitle">정면베기 · 초승달</h2>
+        </div>
+        <div class="score-pill"><span id="score">0</span>점</div>
+      </div>
+
+      <div class="arena" id="arena">
+        <div class="status-badge" id="statusBadge">READY</div>
+        <svg class="guide" viewBox="0 0 600 600" aria-label="태권검도 검선 훈련 가이드">
+          <defs>
+            <linearGradient id="bladeGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#f8fbff"/>
+              <stop offset="0.5" stop-color="#b9c5d4"/>
+              <stop offset="1" stop-color="#ffffff"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+
+          <g class="opponent">
+            <circle cx="300" cy="150" r="58" class="body-line"/>
+            <line x1="300" y1="208" x2="300" y2="430" class="body-line"/>
+            <line x1="215" y1="270" x2="385" y2="270" class="body-line"/>
+            <line x1="300" y1="430" x2="245" y2="555" class="body-line"/>
+            <line x1="300" y1="430" x2="355" y2="555" class="body-line"/>
+            <ellipse cx="300" cy="150" rx="92" ry="78" class="target-zone head-zone"/>
+            <ellipse cx="300" cy="310" rx="112" ry="120" class="target-zone body-zone"/>
+          </g>
+
+          <path id="guidePath" d="M300 55 L300 515" class="target-line"/>
+          <circle id="startDot" cx="300" cy="55" r="8" class="start-dot"/>
+          <circle id="targetDot" cx="300" cy="515" r="10" class="target-dot"/>
+
+          <g id="sword" class="sword" transform="translate(300 55) rotate(0)">
+            <line x1="0" y1="0" x2="0" y2="-142" class="blade"/>
+            <line x1="-28" y1="4" x2="28" y2="4" class="guard"/>
+            <line x1="0" y1="8" x2="0" y2="68" class="handle"/>
+            <circle cx="0" cy="73" r="6" class="pommel"/>
+          </g>
+        </svg>
+
+        <div class="reaction-panel hidden" id="reactionPanel">
+          <div class="reaction-kicker" id="reactionKicker">상대 공격</div>
+          <div class="reaction-command" id="reactionCommand">준비</div>
+          <div class="reaction-answer" id="reactionAnswer"></div>
+        </div>
+
+        <div class="countdown" id="countdown"></div>
+        <div class="instruction" id="instruction">검끝이 중앙 검선을 따라 수직으로 내려오도록 연습하세요.</div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="primary">훈련 시작</button>
+        <button id="demoBtn">동작 보기</button>
+        <button id="successBtn">정확 수행 +1</button>
+        <button id="missBtn">실수 기록</button>
+        <button id="resetBtn" class="ghost">세션 초기화</button>
+      </div>
+
+      <div class="response-buttons hidden" id="responseButtons"></div>
+
+      <div class="session-grid">
+        <div><b id="sessionCount">0</b><span>수행</span></div>
+        <div><b id="sessionAccuracy">0%</b><span>정확도</span></div>
+        <div><b id="sessionTime">00:00</b><span>수련시간</span></div>
+        <div><b id="reactionBest">-</b><span>최고 반응</span></div>
+      </div>
+    </section>
+
+    <section class="panel record-panel">
+      <div class="panel-title"><h2>오늘의 수련기록</h2><span>RECORD</span></div>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span>오늘 목표 <b id="goalCountLabel">100</b>회</span><span id="goalText">0%</span></div>
+        <div class="progress"><div id="goalBar"></div></div>
+      </div>
+
+      <div class="mini-dashboard">
+        <div><span id="todayAccuracy">0%</span><small>오늘 정확도</small></div>
+        <div><span id="todayMinutes">0분</span><small>오늘 수련</small></div>
+      </div>
+
+      <div id="log" class="log"></div>
+      <button id="exportBtn" class="wide">기록 파일 저장</button>
+      <button id="clearDataBtn" class="wide danger-outline">전체 기록 초기화</button>
+      <p class="hint">기록은 이 브라우저에 자동 저장됩니다. v1.2는 공식 메인 포털과 디지털 수련장을 분리하고 브랜드 경험을 강화한 버전입니다.</p>
+    </section>
+  </main>
+
+  <footer>
+    <strong>TAEGEOM Digital Training System v1.2</strong>
+    <span>베기 · 막기 · 찌르기 · 반응 · 검선 · 반복 · 기록</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

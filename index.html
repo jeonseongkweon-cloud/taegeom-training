@@ -3,145 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#090d14" />
-  <title>TAEGEOM Digital Training System v1.1</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#070707" />
+  <meta name="description" content="태권검도 디지털 트레이닝 시스템 - 베기·막기·찌르기·반응·검선·반복 수련 및 기록" />
+  <title>TAEGEOM Digital Training System v1.2</title>
+  <link rel="stylesheet" href="portal.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="brand">
-      <div class="mark" aria-hidden="true">⚔</div>
-      <div>
-        <div class="eyebrow">TAEGEOM DIGITAL TRAINING</div>
-        <h1>태권검도 디지털 트레이닝 시스템</h1>
-        <p>검선을 보고 · 정확히 반복하고 · 순간에 반응하고 · 기록한다</p>
-      </div>
-      <span class="version">v1.1</span>
-    </div>
-    <div class="stats-strip">
-      <div><span id="totalTime">0분</span><small>누적 수련시간</small></div>
-      <div><span id="totalCount">0회</span><small>누적 수행횟수</small></div>
-      <div><span id="bestScore">0점</span><small>최고 점수</small></div>
-      <div><span id="streak">0회</span><small>오늘 수행</small></div>
-    </div>
+  <div class="gold-noise"></div>
+  <header class="topbar">
+    <a class="brand-mini" href="index.html">
+      <img src="assets/wtkf-logo.webp" alt="세계태권검도연맹 WTKF 로고" />
+      <span><b>WTKF</b><small>WORLD TAEKWONKUMDO FEDERATION</small></span>
+    </a>
+    <div class="version-chip">TAEGEOM TRAINING <b>v1.2</b></div>
   </header>
 
-  <main class="layout">
-    <section class="panel menu-panel">
-      <div class="panel-title"><h2>훈련 선택</h2><span>TRAINING</span></div>
-      <div class="cards" id="trainingCards"></div>
-
-      <div class="option-box" id="variantBox">
-        <label>세부 기술</label>
-        <div id="variantButtons" class="choice-grid"></div>
-      </div>
-
-      <div class="level-box">
-        <label for="level">검선 난이도</label>
-        <select id="level">
-          <option value="beginner">초급 · 검선 선명</option>
-          <option value="intermediate">중급 · 검선 반투명</option>
-          <option value="advanced">고급 · 시작·도착점 위주</option>
-        </select>
-      </div>
-      <div class="tip-box">TIP · <b>Space</b> 시작/종료 · <b>↑</b> 정확 수행 · <b>↓</b> 실수 기록</div>
-    </section>
-
-    <section class="panel arena-panel">
-      <div class="arena-head">
-        <div>
-          <small>현재 훈련</small>
-          <h2 id="currentTitle">정면베기 · 초승달</h2>
+  <main>
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="seal-wrap"><img src="assets/wtkf-logo.webp" alt="WTKF 세계태권검도연맹 공식 로고" /></div>
+        <p class="eyebrow">TAEGEOM · WORLD TAEKWONKUMDO FEDERATION</p>
+        <h1>태권검도<br><span>디지털 트레이닝 시스템</span></h1>
+        <p class="lead">검과 발이 하나 되는 길. 화면의 검선을 따라 정확하게 반복하고, 순간적으로 반응하며, 나의 수련시간과 점수를 기록하는 태권검도 전용 디지털 수련장.</p>
+        <div class="hero-actions">
+          <a class="cta primary" href="training.html"><span>⚔</span> 디지털 트레이닝 시작</a>
+          <a class="cta secondary" href="#about">태권검도 알아보기</a>
         </div>
-        <div class="score-pill"><span id="score">0</span>점</div>
-      </div>
-
-      <div class="arena" id="arena">
-        <div class="status-badge" id="statusBadge">READY</div>
-        <svg class="guide" viewBox="0 0 600 600" aria-label="태권검도 검선 훈련 가이드">
-          <defs>
-            <linearGradient id="bladeGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#f8fbff"/>
-              <stop offset="0.5" stop-color="#b9c5d4"/>
-              <stop offset="1" stop-color="#ffffff"/>
-            </linearGradient>
-            <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-
-          <g class="opponent">
-            <circle cx="300" cy="150" r="58" class="body-line"/>
-            <line x1="300" y1="208" x2="300" y2="430" class="body-line"/>
-            <line x1="215" y1="270" x2="385" y2="270" class="body-line"/>
-            <line x1="300" y1="430" x2="245" y2="555" class="body-line"/>
-            <line x1="300" y1="430" x2="355" y2="555" class="body-line"/>
-            <ellipse cx="300" cy="150" rx="92" ry="78" class="target-zone head-zone"/>
-            <ellipse cx="300" cy="310" rx="112" ry="120" class="target-zone body-zone"/>
-          </g>
-
-          <path id="guidePath" d="M300 55 L300 515" class="target-line"/>
-          <circle id="startDot" cx="300" cy="55" r="8" class="start-dot"/>
-          <circle id="targetDot" cx="300" cy="515" r="10" class="target-dot"/>
-
-          <g id="sword" class="sword" transform="translate(300 55) rotate(0)">
-            <line x1="0" y1="0" x2="0" y2="-142" class="blade"/>
-            <line x1="-28" y1="4" x2="28" y2="4" class="guard"/>
-            <line x1="0" y1="8" x2="0" y2="68" class="handle"/>
-            <circle cx="0" cy="73" r="6" class="pommel"/>
-          </g>
-        </svg>
-
-        <div class="reaction-panel hidden" id="reactionPanel">
-          <div class="reaction-kicker" id="reactionKicker">상대 공격</div>
-          <div class="reaction-command" id="reactionCommand">준비</div>
-          <div class="reaction-answer" id="reactionAnswer"></div>
+        <div class="hero-meta">
+          <div><strong>2009</strong><span>태권검도 창시</span></div>
+          <div><strong>17년</strong><span>무도 역사</span></div>
+          <div><strong>51개국</strong><span>국제 네트워크</span></div>
+          <div><strong>150여 지부</strong><span>세계 보급 기반</span></div>
         </div>
-
-        <div class="countdown" id="countdown"></div>
-        <div class="instruction" id="instruction">검끝이 중앙 검선을 따라 수직으로 내려오도록 연습하세요.</div>
-      </div>
-
-      <div class="controls">
-        <button id="startBtn" class="primary">훈련 시작</button>
-        <button id="demoBtn">동작 보기</button>
-        <button id="successBtn">정확 수행 +1</button>
-        <button id="missBtn">실수 기록</button>
-        <button id="resetBtn" class="ghost">세션 초기화</button>
-      </div>
-
-      <div class="response-buttons hidden" id="responseButtons"></div>
-
-      <div class="session-grid">
-        <div><b id="sessionCount">0</b><span>수행</span></div>
-        <div><b id="sessionAccuracy">0%</b><span>정확도</span></div>
-        <div><b id="sessionTime">00:00</b><span>수련시간</span></div>
-        <div><b id="reactionBest">-</b><span>최고 반응</span></div>
       </div>
     </section>
 
-    <section class="panel record-panel">
-      <div class="panel-title"><h2>오늘의 수련기록</h2><span>RECORD</span></div>
-      <div class="progress-wrap">
-        <div class="progress-meta"><span>오늘 목표 <b id="goalCountLabel">100</b>회</span><span id="goalText">0%</span></div>
-        <div class="progress"><div id="goalBar"></div></div>
+    <section class="intro" id="about">
+      <div class="section-title">
+        <span>THE WAY OF TAEGEOM</span>
+        <h2>보는 프로그램이 아니라,<br><em>스스로 수련하는 디지털 도장</em></h2>
+        <p>태권검도의 핵심인 베기·막기·찌르기를 기준으로 검선, 각도, 반복횟수, 정확도, 반응속도와 수련시간을 단계적으로 훈련하도록 설계했습니다.</p>
       </div>
-
-      <div class="mini-dashboard">
-        <div><span id="todayAccuracy">0%</span><small>오늘 정확도</small></div>
-        <div><span id="todayMinutes">0분</span><small>오늘 수련</small></div>
+      <div class="feature-grid">
+        <article><b>01</b><h3>검선 TRAINING</h3><p>정면, 15°, 65°의 기준 검선을 보고 바른 궤적을 반복합니다.</p></article>
+        <article><b>02</b><h3>기본기 TRAINING</h3><p>초승달·반달·보름달베기, 좌우베기, 사선베기, 찌르기와 막기를 수련합니다.</p></article>
+        <article><b>03</b><h3>반응 TRAINING</h3><p>3·2·1 신호와 상대 공격에 순간적으로 대응하며 반응시간을 측정합니다.</p></article>
+        <article><b>04</b><h3>기록 TRAINING</h3><p>수행횟수·정확도·점수·누적 수련시간을 기록해 스스로 발전을 확인합니다.</p></article>
       </div>
+    </section>
 
-      <div id="log" class="log"></div>
-      <button id="exportBtn" class="wide">기록 파일 저장</button>
-      <button id="clearDataBtn" class="wide danger-outline">전체 기록 초기화</button>
-      <p class="hint">기록은 이 브라우저에 자동 저장됩니다. v1.1은 검선·동작·반응훈련을 강화한 버전입니다.</p>
+    <section class="founder">
+      <div class="founder-image"><img src="assets/taegeom-honor.webp" alt="태권검도 세계태권검도연맹 홍보 이미지" /></div>
+      <div class="founder-copy">
+        <span class="eyebrow">FOUNDER & SYSTEM DEVELOPER</span>
+        <h2>창시자의 검법을<br>디지털 수련체계로</h2>
+        <p class="quote">“정확하게 베고, 정확하게 막고, 정확하게 찌른다. 반복은 기술을 만들고 기록은 성장을 증명한다.”</p>
+        <div class="founder-card">
+          <div class="signature">전성권</div>
+          <div><strong>JEON SEONG KWEON</strong><span>태권검도 창시자 · TAEGEOM Digital Training System 개발자</span></div>
+        </div>
+        <p class="description">태권검도는 태권도의 역동성과 검도의 검법을 융합한 신개념 무도·스포츠입니다. 본 시스템은 수련생이 장소와 시간에 구애받지 않고 기본 검법을 반복하고 자신의 수련 결과를 확인할 수 있도록 개발하고 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="roadmap">
+      <div class="section-title compact">
+        <span>VERSION 1.2</span>
+        <h2>현재 버전에서 할 수 있는 것</h2>
+      </div>
+      <div class="version-board">
+        <div class="vnow"><span>CURRENT</span><strong>v1.2</strong><p>공식 메인 포털 · 훈련장 분리 · 태권검도 브랜드 UI · 기본기/반응/콤보/기록 시스템</p></div>
+        <div class="vnext"><span>NEXT</span><strong>v1.3+</strong><p>실제 동작 영상 · 음성 코칭 · 레벨 인증 · 개인 ID · 스마트폰 센서 기반 각도/속도 측정으로 확장 예정</p></div>
+      </div>
+      <a class="cta primary large" href="training.html">태권검도 디지털 수련장 입장 →</a>
     </section>
   </main>
 
   <footer>
-    <strong>TAEGEOM Digital Training System v1.1</strong>
-    <span>베기 · 막기 · 찌르기 · 반응 · 검선 · 반복 · 기록</span>
+    <img src="assets/wtkf-logo.webp" alt="WTKF" />
+    <div><strong>WORLD TAEKWONKUMDO FEDERATION</strong><span>DISCIPLINE · RESPECT · HARMONY</span></div>
+    <div class="footer-version">TAEGEOM Digital Training System <b>v1.2</b></div>
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
