@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#090d14" />
-  <title>TAEGEOM Digital Training System v1.3 · Training</title>
+  <title>TAEGEOM Digital Training System v1.4 · Training</title>
   <link rel="stylesheet" href="training.css" />
 </head>
 <body>
@@ -16,13 +16,18 @@
         <h1>태권검도 디지털 트레이닝 시스템</h1>
         <p>검선을 보고 · 정확히 반복하고 · 순간에 반응하고 · 기록한다</p>
       </div>
-      <div class="training-nav"><a href="index.html">← 메인</a><span class="version">v1.3</span></div>
+      <div class="training-nav"><a href="index.html">← 메인</a><span class="version">v1.4</span></div>
     </div>
     <div class="stats-strip">
       <div><span id="totalTime">0분</span><small>누적 수련시간</small></div>
       <div><span id="totalCount">0회</span><small>누적 수행횟수</small></div>
       <div><span id="bestScore">0점</span><small>최고 점수</small></div>
       <div><span id="streak">0회</span><small>오늘 수행</small></div>
+    </div>
+    <div class="growth-strip">
+      <div class="rank-card"><span>개인 수련등급</span><strong id="rankName">LEVEL 1 · 입문</strong><small id="rankNext">다음 등급까지 100 XP</small></div>
+      <div class="xp-card"><div class="xp-meta"><span>TRAINING XP</span><b id="xpText">0 / 100</b></div><div class="xp-bar"><i id="xpBar"></i></div></div>
+      <div class="badge-card"><span>기술 인증</span><strong id="passCount">0 / 13</strong><small>합격 기술 누적</small></div>
     </div>
   </header>
 
@@ -55,6 +60,16 @@
         </div>
         <div class="score-pill"><span id="score">0</span>점</div>
       </div>
+
+      <section class="angle-lab" id="angleLab">
+        <div class="angle-head"><div><small>정면베기 핵심 · SIDE VIEW</small><h3>치켜드는 준비각도가 세 가지 달을 결정합니다</h3></div><span id="angleBadge">초승달 · 45°</span></div>
+        <div class="angle-cards">
+          <button class="angle-card active" data-angle-tech="crescent"><b>초승달베기</b><span>이마 위 약 45°</span><svg viewBox="0 0 220 130" aria-label="초승달 준비각도 측면"><circle cx="72" cy="54" r="25"/><path d="M62 79 Q72 94 82 112"/><line x1="86" y1="78" x2="104" y2="91"/><line class="angle-sword" x1="103" y1="90" x2="174" y2="19"/><path class="angle-arc" d="M111 88 A42 42 0 0 1 148 48"/><text x="145" y="78">45°</text></svg><small>정면에서는 손잡이 끝이 거의 보이지 않고, 눈을 위로 들면 보이는 정도</small></button>
+          <button class="angle-card" data-angle-tech="half"><b>반달베기</b><span>머리 위 수평 · 180°</span><svg viewBox="0 0 220 130" aria-label="반달 준비각도 측면"><circle cx="72" cy="54" r="25"/><path d="M62 79 Q72 94 82 112"/><line x1="84" y1="78" x2="112" y2="67"/><line class="angle-sword" x1="111" y1="67" x2="196" y2="67"/><line class="angle-base" x1="108" y1="92" x2="194" y2="92"/><text x="145" y="58">180°</text></svg><small>왼손을 충분히 뻗어 검이 머리 위에서 완전한 수평을 이루는 준비</small></button>
+          <button class="angle-card" data-angle-tech="full"><b>보름달베기</b><span>귀까지 크게 · 목덜미/어깨</span><svg viewBox="0 0 220 130" aria-label="보름달 준비각도 측면"><circle cx="72" cy="54" r="25"/><path d="M62 79 Q72 94 82 112"/><line x1="83" y1="77" x2="105" y2="52"/><path class="angle-sword thick" d="M105 52 Q137 37 174 57 Q150 82 112 91"/><path class="angle-arc" d="M104 50 Q143 26 181 54"/><text x="146" y="28">큰 궤적</text></svg><small>왼손을 귀까지 최대한 올리고 검이 어깨·목덜미에 닿을 만큼 깊게 준비</small></button>
+        </div>
+        <div class="angle-coach"><b id="angleTitle">초승달 준비각도</b><span id="angleCoach">측면을 보고 이마 위에서 약 45°로 세운 뒤 중심선을 따라 빠르게 내려베기 합니다.</span></div>
+      </section>
 
       <div class="arena" id="arena">
         <div class="status-badge" id="statusBadge">READY</div>
@@ -120,6 +135,18 @@
 
     <section class="panel record-panel">
       <div class="panel-title"><h2>오늘의 수련기록</h2><span>RECORD</span></div>
+      <section class="mission-box">
+        <div class="mission-title"><span>DAILY MISSION</span><b id="missionStatus">진행중</b></div>
+        <div class="mission-row"><span>① 정확 수행 30회</span><strong id="missionCount">0 / 30</strong></div>
+        <div class="mission-row"><span>② 오늘 정확도 80%+</span><strong id="missionAccuracy">0%</strong></div>
+        <div class="mission-row"><span>③ 오늘 수련 5분+</span><strong id="missionTime">0 / 5분</strong></div>
+        <div class="mission-progress"><i id="missionBar"></i></div>
+      </section>
+      <section class="tech-pass-box">
+        <div class="pass-head"><span>TECHNIQUE PASS</span><b>기술별 합격 기준</b></div>
+        <p>한 세션 <strong>10회 이상</strong> 수행 + 기술별 합격점수 달성 시 자동 인증됩니다.</p>
+        <div id="passList" class="pass-list"></div>
+      </section>
       <div class="progress-wrap">
         <div class="progress-meta"><span>오늘 목표 <b id="goalCountLabel">100</b>회</span><span id="goalText">0%</span></div>
         <div class="progress"><div id="goalBar"></div></div>
@@ -132,13 +159,14 @@
 
       <div id="log" class="log"></div>
       <button id="exportBtn" class="wide">기록 파일 저장</button>
+      <button id="certificateBtn" class="wide certificate-btn">나의 디지털 수련 인증카드 저장</button>
       <button id="clearDataBtn" class="wide danger-outline">전체 기록 초기화</button>
-      <p class="hint">기록은 이 브라우저에 자동 저장됩니다. v1.3는 공식 메인 포털, 태권검도 소개·태검월드 연결, 창시자/개발자 프로필을 강화한 버전입니다.</p>
+      <p class="hint">기록은 이 브라우저에 자동 저장됩니다. v1.4는 정면베기 준비각도, 수련미션, 기술별 합격, 개인등급, 디지털 수련 인증을 강화한 버전입니다.</p>
     </section>
   </main>
 
   <footer>
-    <strong>TAEGEOM Digital Training System v1.3</strong>
+    <strong>TAEGEOM Digital Training System v1.4</strong>
     <span>베기 · 막기 · 찌르기 · 반응 · 검선 · 반복 · 기록</span>
   </footer>
 
