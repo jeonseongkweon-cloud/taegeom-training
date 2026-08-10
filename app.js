@@ -1,66 +1,123 @@
 const trainings = [
-  {id:'front', title:'정면베기', sub:'초승달 · 반달 · 보름달', line:'vertical', text:'검끝이 중앙 검선을 따라 수직으로 내려오도록 연습하세요.'},
-  {id:'left', title:'좌베기 15°', sub:'상대 목선 방향', line:'left15', text:'정면 기준 왼쪽 15° 검선을 정확하게 따라 내려베기 합니다.'},
-  {id:'right', title:'우베기 15°', sub:'상대 목선 방향', line:'right15', text:'정면 기준 오른쪽 15° 검선을 정확하게 따라 내려베기 합니다.'},
-  {id:'diagDown', title:'사선 내려베기 65°', sub:'좌·우 대각선', line:'diagDown', text:'약 65° 사선 검선을 따라 크게 내려베기 합니다.'},
-  {id:'diagUp', title:'사선 올려베기 65°', sub:'좌·우 대각선', line:'diagUp', text:'아래에서 위로 약 65° 검선을 따라 올려베기 합니다.'},
-  {id:'thrust', title:'찌르기', sub:'중심선 정확도', line:'thrust', text:'검끝이 상대 중심선을 벗어나지 않도록 직선으로 찌릅니다.'},
-  {id:'block', title:'막기 훈련', sub:'얼굴 · 몸통 · 아래막기', line:'block', text:'상대 공격을 보고 얼굴막기, 몸통막기, 아래막기를 선택하세요.'},
-  {id:'reaction', title:'3·2·1 반응훈련', sub:'랜덤 공격·방어', line:'reaction', text:'카운트다운 후 나타나는 기술에 즉시 반응하세요.'},
-  {id:'combo', title:'콤보 훈련', sub:'3·5·7 연속동작', line:'combo', text:'제시된 기술을 끊김 없이 연속 수행하세요.'}
+  {id:'front', title:'정면베기', sub:'초승달 · 반달 · 보름달', text:'정면 중심선을 정확히 지키며 내려베기 합니다.', variants:[['crescent','초승달'],['half','반달'],['full','보름달']]},
+  {id:'neck', title:'좌·우베기 15°', sub:'상대 목선 방향', text:'정면 기준 15° 검선을 따라 목선 방향으로 내려베기 합니다.', variants:[['left15','좌베기'],['right15','우베기']]},
+  {id:'diagDown', title:'사선 내려베기 65°', sub:'좌·우 대각선', text:'약 65° 사선 검선을 따라 크게 내려베기 합니다.', variants:[['diagDownL','좌 사선'],['diagDownR','우 사선']]},
+  {id:'diagUp', title:'사선 올려베기 65°', sub:'좌·우 대각선', text:'아래에서 위로 약 65° 검선을 따라 올려베기 합니다.', variants:[['diagUpL','좌 사선'],['diagUpR','우 사선']]},
+  {id:'thrust', title:'찌르기', sub:'중심선 정확도', text:'검끝이 상대 중심선을 벗어나지 않도록 직선으로 찌릅니다.', variants:[['thrust','중심 찌르기']]},
+  {id:'block', title:'막기 훈련', sub:'얼굴 · 몸통 · 아래막기', text:'상대 공격에 맞는 막기를 선택하고 정확한 위치에서 막아냅니다.', variants:[['faceBlock','얼굴막기'],['bodyBlock','몸통막기'],['lowBlock','아래막기']]},
+  {id:'reaction', title:'3·2·1 반응훈련', sub:'공격을 보고 즉시 방어', text:'카운트다운 후 상대 공격을 보고 알맞은 대응 기술을 선택하세요.', variants:[]},
+  {id:'combo', title:'콤보 훈련', sub:'3연속 검선 연결', text:'제시된 3개 기술을 끊김 없이 순서대로 수행하세요.', variants:[]}
 ];
 
-const $ = (s)=>document.querySelector(s);
-let state = { current:'front', started:false, startAt:null, timer:null, sessionCount:0, hit:0, miss:0, score:0, reactionStart:null, bestReaction:null };
-let saved = JSON.parse(localStorage.getItem('taegeomTraining')||'{}');
-saved.totalTime ||= 0; saved.totalCount ||= 0; saved.bestScore ||= 0; saved.logs ||= []; saved.today ||= new Date().toISOString().slice(0,10); saved.todayCount ||=0;
-if(saved.today !== new Date().toISOString().slice(0,10)){ saved.today=new Date().toISOString().slice(0,10); saved.todayCount=0; }
+const technique = {
+  crescent:{label:'초승달베기', desc:'작은 준비 궤적 · 빠른 정면베기', path:'M300 125 Q300 86 300 55 L300 515', start:[300,125], end:[300,515], rot0:0, rot1:180, duration:650},
+  half:{label:'반달베기', desc:'머리 위 수평 준비 · 중간 궤적', path:'M210 120 Q300 55 390 120 Q340 150 300 205 L300 515', start:[210,120], end:[300,515], rot0:-82, rot1:180, duration:950},
+  full:{label:'보름달베기', desc:'어깨 뒤 큰 준비 · 큰 원형 궤적', path:'M150 250 C135 65 465 30 455 245 C450 340 365 410 300 515', start:[150,250], end:[300,515], rot0:-125, rot1:180, duration:1350},
+  left15:{label:'좌베기 15°', desc:'정면 기준 왼쪽 15°', path:'M340 60 L220 510', start:[340,60], end:[220,510], rot0:15, rot1:195, duration:850},
+  right15:{label:'우베기 15°', desc:'정면 기준 오른쪽 15°', path:'M260 60 L380 510', start:[260,60], end:[380,510], rot0:-15, rot1:165, duration:850},
+  diagDownL:{label:'좌 사선 내려베기 65°', desc:'좌측 위에서 우측 아래', path:'M165 95 L440 500', start:[165,95], end:[440,500], rot0:-34, rot1:146, duration:900},
+  diagDownR:{label:'우 사선 내려베기 65°', desc:'우측 위에서 좌측 아래', path:'M435 95 L160 500', start:[435,95], end:[160,500], rot0:34, rot1:214, duration:900},
+  diagUpL:{label:'좌 사선 올려베기 65°', desc:'좌측 아래에서 우측 위', path:'M165 500 L440 100', start:[165,500], end:[440,100], rot0:-146, rot1:34, duration:900},
+  diagUpR:{label:'우 사선 올려베기 65°', desc:'우측 아래에서 좌측 위', path:'M435 500 L160 100', start:[435,500], end:[160,100], rot0:146, rot1:-34, duration:900},
+  thrust:{label:'찌르기', desc:'중심선을 향해 직선 찌르기', path:'M105 310 L490 310', start:[105,310], end:[490,310], rot0:90, rot1:90, duration:650},
+  faceBlock:{label:'얼굴막기', desc:'정면베기에 대응', path:'M205 205 L395 205', start:[205,205], end:[395,205], rot0:90, rot1:90, duration:650},
+  bodyBlock:{label:'몸통막기', desc:'찌르기에 대응', path:'M220 340 Q300 290 380 340', start:[220,340], end:[380,340], rot0:65, rot1:115, duration:700},
+  lowBlock:{label:'아래막기', desc:'사선 올려베기에 대응', path:'M210 430 L390 430', start:[210,430], end:[390,430], rot0:90, rot1:90, duration:650}
+};
+
+const reactionCases = [
+  {attack:'정면베기!', answer:'얼굴막기', key:'얼굴막기'},
+  {attack:'찌르기!', answer:'몸통막기', key:'몸통막기'},
+  {attack:'사선 올려베기!', answer:'아래막기', key:'아래막기'},
+  {attack:'얼굴막기!', answer:'정면베기', key:'정면베기'},
+  {attack:'아래막기!', answer:'사선 내려베기', key:'사선 내려베기'}
+];
+const reactionOptions=['얼굴막기','몸통막기','아래막기','정면베기','좌베기','우베기','사선 내려베기','사선 올려베기','찌르기'];
+const combos=[
+  ['정면베기','좌베기','우베기'],['좌 사선 내려베기','우 사선 내려베기','정면베기'],['사선 올려베기','정면베기','찌르기'],['정면베기','우베기','좌 사선 내려베기']
+];
+
+const $=s=>document.querySelector(s);
+const today=()=>new Date().toISOString().slice(0,10);
+let saved;
+try{saved=JSON.parse(localStorage.getItem('taegeomTraining')||'{}')}catch{saved={}}
+saved.totalTime=Number(saved.totalTime)||0;saved.totalCount=Number(saved.totalCount)||0;saved.bestScore=Number(saved.bestScore)||0;saved.logs=Array.isArray(saved.logs)?saved.logs:[];saved.today=saved.today||today();saved.todayCount=Number(saved.todayCount)||0;saved.todayHit=Number(saved.todayHit)||0;saved.todayMiss=Number(saved.todayMiss)||0;saved.todayMinutes=Number(saved.todayMinutes)||0;
+if(saved.today!==today()){saved.today=today();saved.todayCount=0;saved.todayHit=0;saved.todayMiss=0;saved.todayMinutes=0;}
+
+let state={current:'front',variant:'crescent',started:false,startAt:null,timer:null,sessionCount:0,hit:0,miss:0,score:0,bestReaction:null,reactionStart:null,reactionCase:null,reactionTimer:null,combo:null,comboStep:0,demoing:false};
 
 function renderCards(){
-  $('#trainingCards').innerHTML = trainings.map(t=>`<button class="training-card ${t.id===state.current?'active':''}" data-id="${t.id}"><b>${t.title}</b><small>${t.sub}</small></button>`).join('');
+  $('#trainingCards').innerHTML=trainings.map(t=>`<button class="training-card ${t.id===state.current?'active':''}" data-id="${t.id}"><b>${t.title}</b><small>${t.sub}</small></button>`).join('');
   document.querySelectorAll('.training-card').forEach(b=>b.onclick=()=>selectTraining(b.dataset.id));
 }
-
-function selectTraining(id){
-  state.current=id; const t=trainings.find(x=>x.id===id); $('#currentTitle').textContent=t.title; $('#instruction').textContent=t.text; renderCards(); drawGuide(t.line);
-  if(id==='reaction') $('#instruction').textContent='훈련 시작을 누르면 3·2·1 후 랜덤 기술이 나타납니다.';
+function renderVariants(){
+  const t=trainings.find(x=>x.id===state.current); const box=$('#variantBox');
+  if(!t.variants.length){box.style.display='none';return} box.style.display='block';
+  if(!t.variants.some(v=>v[0]===state.variant)) state.variant=t.variants[0][0];
+  $('#variantButtons').innerHTML=t.variants.map(v=>`<button class="choice-btn ${v[0]===state.variant?'active':''}" data-v="${v[0]}">${v[1]}</button>`).join('');
+  document.querySelectorAll('.choice-btn').forEach(b=>b.onclick=()=>{state.variant=b.dataset.v;renderVariants();updateTechnique();});
 }
+function selectTraining(id){
+  clearTimeout(state.reactionTimer); state.reactionStart=null; state.current=id;
+  const t=trainings.find(x=>x.id===id); if(t.variants.length) state.variant=t.variants[0][0];
+  $('#reactionPanel').classList.add('hidden');$('#responseButtons').classList.add('hidden');
+  renderCards();renderVariants();updateTechnique();
+  if(id==='reaction'){$('#currentTitle').textContent='3·2·1 반응훈련';$('#instruction').textContent='훈련 시작을 누르면 카운트다운 후 상대 공격이 나타납니다.';hideGuide(true)}
+  if(id==='combo'){$('#currentTitle').textContent='콤보 훈련';$('#instruction').textContent='훈련 시작 후 제시되는 3개 기술을 순서대로 수행하세요.';newCombo();hideGuide(false)}
+}
+function updateTechnique(){
+  if(['reaction','combo'].includes(state.current))return;
+  const tech=technique[state.variant];$('#currentTitle').textContent=tech.label;$('#instruction').textContent=`${tech.desc} · 검끝이 빛나는 검선을 정확히 따라가도록 반복하세요.`;drawGuide(tech);
+}
+function drawGuide(tech){
+  const path=$('#guidePath');path.setAttribute('d',tech.path);$('#startDot').setAttribute('cx',tech.start[0]);$('#startDot').setAttribute('cy',tech.start[1]);$('#targetDot').setAttribute('cx',tech.end[0]);$('#targetDot').setAttribute('cy',tech.end[1]);
+  const sword=$('#sword');sword.setAttribute('transform',`translate(${tech.start[0]} ${tech.start[1]}) rotate(${tech.rot0})`);hideGuide(false);applyLevel();
+}
+function applyLevel(){
+  const lv=$('#level').value,p=$('#guidePath');p.style.opacity=lv==='beginner'?'1':lv==='intermediate'?'.48':'.08';p.style.strokeWidth=lv==='beginner'?'10':lv==='intermediate'?'7':'5';
+}
+function hideGuide(hide){$('#guidePath').style.display=hide?'none':'block';$('#startDot').style.display=hide?'none':'block';$('#targetDot').style.display=hide?'none':'block';$('#sword').style.display=hide?'none':'block'}
+function beep(freq=880,dur=.1){try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=freq;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);o.start();o.stop(a.currentTime+dur)}catch{}}
 
-function drawGuide(type){
-  const line=$('#guideLine'), arc=$('#arcGuide'), dot=$('#targetDot'); arc.setAttribute('d',''); line.style.display='block'; dot.style.display='block';
-  const level=$('#level').value; const widths={beginner:12,intermediate:8,advanced:5}; line.setAttribute('stroke-width',widths[level]);
-  const set=(x1,y1,x2,y2)=>{ line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);dot.setAttribute('cx',x2);dot.setAttribute('cy',y2); };
-  if(type==='vertical') set(300,70,300,510);
-  else if(type==='left15') set(340,70,220,510);
-  else if(type==='right15') set(260,70,380,510);
-  else if(type==='diagDown') set(165,95,430,500);
-  else if(type==='diagUp') set(175,500,430,105);
-  else if(type==='thrust') set(110,300,495,300);
-  else if(type==='block'){ set(170,220,430,220); }
-  else { line.style.display='none'; dot.style.display='none'; arc.setAttribute('d','M170 410 Q300 120 430 410'); }
+function demo(){
+  if(state.demoing||['reaction','combo'].includes(state.current))return;state.demoing=true;const tech=technique[state.variant],s=$('#sword'),path=$('#guidePath');s.classList.add('demoing');const len=path.getTotalLength();const start=performance.now();
+  function frame(now){const p=Math.min(1,(now-start)/tech.duration),e=1-Math.pow(1-p,3),pt=path.getPointAtLength(len*e),pt2=path.getPointAtLength(Math.min(len,len*e+3)),ang=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI+90;s.setAttribute('transform',`translate(${pt.x} ${pt.y}) rotate(${ang})`);if(p<1)requestAnimationFrame(frame);else{state.demoing=false;s.classList.remove('demoing');setTimeout(()=>s.setAttribute('transform',`translate(${tech.start[0]} ${tech.start[1]}) rotate(${tech.rot0})`),350)}}requestAnimationFrame(frame);
 }
 
 function start(){
-  if(!state.started){ state.started=true; state.startAt=Date.now(); $('#startBtn').textContent='훈련 종료'; state.timer=setInterval(updateTime,250); log('훈련 시작', trainings.find(x=>x.id===state.current).title); }
+  if(!state.started){state.started=true;state.startAt=Date.now();$('#startBtn').textContent='훈련 종료';$('#statusBadge').textContent='TRAINING';$('#statusBadge').classList.add('live');state.timer=setInterval(updateTime,250);addTempLog('훈련 시작',trainings.find(x=>x.id===state.current).title);if(state.current==='reaction')runReaction();if(state.current==='combo')showCombo();}
   else endSession();
-  if(state.current==='reaction') runReaction();
 }
-function updateTime(){ const sec=Math.floor((Date.now()-state.startAt)/1000); $('#sessionTime').textContent=`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`; }
-function success(){ if(!state.started) return; state.sessionCount++;state.hit++; state.score=Math.min(100,Math.round((state.hit/(state.hit+state.miss))*80 + Math.min(state.sessionCount,20))); if(state.reactionStart){ const r=((performance.now()-state.reactionStart)/1000).toFixed(2); state.bestReaction=state.bestReaction?Math.min(state.bestReaction,+r):+r; state.reactionStart=null; $('#reactionBest').textContent=state.bestReaction.toFixed(2)+'초'; }
-  refresh(); if(state.current==='reaction') setTimeout(runReaction,500);
-}
-function miss(){ if(!state.started)return; state.sessionCount++;state.miss++; state.score=Math.round((state.hit/(state.hit+state.miss))*100); state.reactionStart=null; refresh(); if(state.current==='reaction') setTimeout(runReaction,500); }
-function refresh(){ $('#sessionCount').textContent=state.sessionCount; const total=state.hit+state.miss; $('#sessionAccuracy').textContent=(total?Math.round(state.hit/total*100):0)+'%'; $('#score').textContent=state.score; }
-function runReaction(){
-  const cd=$('#countdown'); let n=3; cd.textContent=n; $('#instruction').textContent='준비하세요'; const iv=setInterval(()=>{ n--; if(n>0) cd.textContent=n; else { clearInterval(iv); cd.textContent='삐!'; const pool=['정면베기','좌베기 15°','우베기 15°','사선 내려베기','사선 올려베기','찌르기','얼굴막기','몸통막기','아래막기']; const pick=pool[Math.floor(Math.random()*pool.length)]; $('#instruction').textContent=pick; state.reactionStart=performance.now(); setTimeout(()=>cd.textContent='',350); } },700);
-}
-function endSession(){
-  clearInterval(state.timer); const sec=state.startAt?Math.floor((Date.now()-state.startAt)/1000):0; const min=sec/60; saved.totalTime += min; saved.totalCount += state.sessionCount; saved.todayCount += state.sessionCount; saved.bestScore=Math.max(saved.bestScore,state.score); const t=trainings.find(x=>x.id===state.current); const entry={time:new Date().toLocaleString('ko-KR'),title:t.title,count:state.sessionCount,score:state.score,accuracy:state.hit+state.miss?Math.round(state.hit/(state.hit+state.miss)*100):0,minutes:+min.toFixed(1)}; saved.logs.unshift(entry); saved.logs=saved.logs.slice(0,50); persist(); log('훈련 완료',`${entry.title} · ${entry.count}회 · ${entry.score}점`); state.started=false; $('#startBtn').textContent='훈련 시작'; renderSaved(); }
-function resetSession(){ clearInterval(state.timer); state={...state,started:false,startAt:null,timer:null,sessionCount:0,hit:0,miss:0,score:0,reactionStart:null,bestReaction:null}; $('#startBtn').textContent='훈련 시작'; $('#sessionTime').textContent='00:00'; $('#reactionBest').textContent='-'; refresh(); }
-function persist(){ localStorage.setItem('taegeomTraining',JSON.stringify(saved)); }
-function log(title,detail){ const box=$('#log'); const el=document.createElement('div'); el.className='log-item'; el.innerHTML=`<b>${title}</b><span>${detail}</span>`; box.prepend(el); }
-function renderSaved(){ $('#totalTime').textContent=Math.round(saved.totalTime)+'분'; $('#totalCount').textContent=saved.totalCount+'회'; $('#bestScore').textContent=saved.bestScore+'점'; $('#streak').textContent=saved.todayCount; const pct=Math.min(100,saved.todayCount); $('#goalText').textContent=pct+'%'; $('#goalBar').style.width=pct+'%'; $('#log').innerHTML=saved.logs.map(l=>`<div class="log-item"><b>${l.title} · ${l.score}점</b><span>${l.time} · ${l.count}회 · 정확도 ${l.accuracy}% · ${l.minutes}분</span></div>`).join('') || '<div class="log-item"><b>아직 기록이 없습니다.</b><span>첫 수련을 시작해보세요.</span></div>'; }
-function exportRecord(){ const blob=new Blob([JSON.stringify(saved,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='taegeom-training-record.json'; a.click(); URL.revokeObjectURL(a.href); }
+function updateTime(){const sec=Math.floor((Date.now()-state.startAt)/1000);$('#sessionTime').textContent=`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`}
+function calcScore(){const total=state.hit+state.miss,acc=total?state.hit/total:0;state.score=Math.max(0,Math.min(100,Math.round(acc*85+Math.min(state.sessionCount,30)/2)))}
+function success(){if(!state.started)return;state.sessionCount++;state.hit++;calcScore();refresh();if(state.current==='combo')advanceCombo();}
+function miss(){if(!state.started)return;state.sessionCount++;state.miss++;calcScore();state.reactionStart=null;refresh();if(state.current==='combo')advanceCombo();}
+function refresh(){const total=state.hit+state.miss;$('#sessionCount').textContent=state.sessionCount;$('#sessionAccuracy').textContent=(total?Math.round(state.hit/total*100):0)+'%';$('#score').textContent=state.score}
 
-$('#startBtn').onclick=start; $('#successBtn').onclick=success; $('#missBtn').onclick=miss; $('#resetBtn').onclick=resetSession; $('#exportBtn').onclick=exportRecord; $('#level').onchange=()=>drawGuide(trainings.find(x=>x.id===state.current).line);
-renderCards(); selectTraining('front'); renderSaved();
+function runReaction(){
+  if(!state.started||state.current!=='reaction')return;clearTimeout(state.reactionTimer);$('#reactionPanel').classList.remove('hidden');$('#responseButtons').classList.add('hidden');$('#reactionKicker').textContent='준비';$('#reactionCommand').textContent='집중';$('#reactionAnswer').textContent='';let n=3;$('#countdown').textContent=n;
+  const tick=()=>{if(!state.started||state.current!=='reaction')return;n--;if(n>0){$('#countdown').textContent=n;beep(520,.07);state.reactionTimer=setTimeout(tick,650)}else{$('#countdown').textContent='삐!';beep(1050,.12);state.reactionCase=reactionCases[Math.floor(Math.random()*reactionCases.length)];$('#reactionKicker').textContent='상대 공격';$('#reactionCommand').textContent=state.reactionCase.attack;$('#reactionAnswer').textContent='정확한 대응을 선택하세요';state.reactionStart=performance.now();showReactionButtons();state.reactionTimer=setTimeout(()=>$('#countdown').textContent='',320)}};beep(520,.07);state.reactionTimer=setTimeout(tick,650)
+}
+function showReactionButtons(){const box=$('#responseButtons');box.classList.remove('hidden');const choices=[state.reactionCase.answer];while(choices.length<5){const p=reactionOptions[Math.floor(Math.random()*reactionOptions.length)];if(!choices.includes(p))choices.push(p)}choices.sort(()=>Math.random()-.5);box.innerHTML=choices.map(c=>`<button data-answer="${c}">${c}</button>`).join('');box.querySelectorAll('button').forEach(b=>b.onclick=()=>answerReaction(b))}
+function answerReaction(btn){if(!state.reactionStart)return;const val=btn.dataset.answer,correct=val===state.reactionCase.answer,reaction=(performance.now()-state.reactionStart)/1000;state.reactionStart=null;state.sessionCount++;if(correct){state.hit++;btn.classList.add('correct');state.bestReaction=state.bestReaction===null?reaction:Math.min(state.bestReaction,reaction);$('#reactionBest').textContent=state.bestReaction.toFixed(2)+'초';$('#reactionAnswer').textContent=`정확! ${reaction.toFixed(2)}초 · ${state.reactionCase.answer}`;beep(1250,.08)}else{state.miss++;btn.classList.add('wrong');$('#reactionAnswer').textContent=`정답: ${state.reactionCase.answer}`;beep(220,.16)}calcScore();refresh();boxDisable(true);state.reactionTimer=setTimeout(()=>{boxDisable(false);runReaction()},1100)}
+function boxDisable(disabled){document.querySelectorAll('#responseButtons button').forEach(b=>b.disabled=disabled)}
+
+function newCombo(){state.combo=combos[Math.floor(Math.random()*combos.length)];state.comboStep=0}
+function showCombo(){newCombo();$('#instruction').textContent=`콤보: ① ${state.combo[0]} → ② ${state.combo[1]} → ③ ${state.combo[2]}`;$('#currentTitle').textContent='콤보 3연속';beep(760,.08)}
+function advanceCombo(){if(state.current!=='combo'||!state.started)return;state.comboStep++;if(state.comboStep>=3){$('#instruction').textContent='콤보 완료! 다음 콤보를 준비하세요.';beep(1250,.12);setTimeout(showCombo,900)}else{$('#instruction').textContent=`다음: ${state.combo[state.comboStep]} · (${state.comboStep+1}/3)`}}
+
+function endSession(){
+  clearInterval(state.timer);clearTimeout(state.reactionTimer);const sec=state.startAt?Math.floor((Date.now()-state.startAt)/1000):0,min=sec/60,total=state.hit+state.miss,accuracy=total?Math.round(state.hit/total*100):0;const t=trainings.find(x=>x.id===state.current);saved.totalTime+=min;saved.totalCount+=state.sessionCount;saved.todayCount+=state.sessionCount;saved.todayHit+=state.hit;saved.todayMiss+=state.miss;saved.todayMinutes+=min;saved.bestScore=Math.max(saved.bestScore,state.score);saved.logs.unshift({time:new Date().toLocaleString('ko-KR'),title:t.title,count:state.sessionCount,score:state.score,accuracy,minutes:+min.toFixed(1),bestReaction:state.bestReaction});saved.logs=saved.logs.slice(0,60);persist();state.started=false;$('#startBtn').textContent='훈련 시작';$('#statusBadge').textContent='READY';$('#statusBadge').classList.remove('live');$('#countdown').textContent='';$('#reactionPanel').classList.add('hidden');$('#responseButtons').classList.add('hidden');renderSaved();addTempLog('훈련 완료',`${t.title} · ${state.sessionCount}회 · ${state.score}점`)
+}
+function resetSession(){clearInterval(state.timer);clearTimeout(state.reactionTimer);Object.assign(state,{started:false,startAt:null,timer:null,sessionCount:0,hit:0,miss:0,score:0,bestReaction:null,reactionStart:null,comboStep:0});$('#startBtn').textContent='훈련 시작';$('#statusBadge').textContent='READY';$('#statusBadge').classList.remove('live');$('#sessionTime').textContent='00:00';$('#reactionBest').textContent='-';$('#countdown').textContent='';$('#reactionPanel').classList.add('hidden');$('#responseButtons').classList.add('hidden');refresh();updateTechnique()}
+function persist(){localStorage.setItem('taegeomTraining',JSON.stringify(saved))}
+function addTempLog(title,detail){const box=$('#log'),el=document.createElement('div');el.className='log-item';el.innerHTML=`<b>${title}</b><span>${detail}</span>`;box.prepend(el)}
+function renderSaved(){
+  $('#totalTime').textContent=Math.round(saved.totalTime)+'분';$('#totalCount').textContent=saved.totalCount+'회';$('#bestScore').textContent=saved.bestScore+'점';$('#streak').textContent=saved.todayCount+'회';const goal=100,pct=Math.min(100,Math.round(saved.todayCount/goal*100));$('#goalText').textContent=pct+'%';$('#goalBar').style.width=pct+'%';const tt=saved.todayHit+saved.todayMiss;$('#todayAccuracy').textContent=(tt?Math.round(saved.todayHit/tt*100):0)+'%';$('#todayMinutes').textContent=Math.round(saved.todayMinutes)+'분';$('#log').innerHTML=saved.logs.map(l=>`<div class="log-item"><b>${l.title} · ${l.score}점</b><span>${l.time} · ${l.count}회 · 정확도 ${l.accuracy}% · ${l.minutes}분${l.bestReaction?` · 반응 ${Number(l.bestReaction).toFixed(2)}초`:''}</span></div>`).join('')||'<div class="log-item"><b>아직 기록이 없습니다.</b><span>첫 수련을 시작해보세요.</span></div>'
+}
+function exportRecord(){const blob=new Blob([JSON.stringify(saved,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`taegeom-training-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),300)}
+function clearData(){if(confirm('누적 수련기록을 모두 초기화할까요? 이 작업은 되돌릴 수 없습니다.')){localStorage.removeItem('taegeomTraining');location.reload()}}
+
+$('#startBtn').onclick=start;$('#demoBtn').onclick=demo;$('#successBtn').onclick=success;$('#missBtn').onclick=miss;$('#resetBtn').onclick=resetSession;$('#exportBtn').onclick=exportRecord;$('#clearDataBtn').onclick=clearData;$('#level').onchange=()=>applyLevel();
+document.addEventListener('keydown',e=>{if(e.target.matches('select,input,textarea,button'))return;if(e.code==='Space'){e.preventDefault();start()}if(e.key==='ArrowUp'){e.preventDefault();success()}if(e.key==='ArrowDown'){e.preventDefault();miss()}});
+renderCards();renderVariants();updateTechnique();renderSaved();
