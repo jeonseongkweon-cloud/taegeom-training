@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAEGEOM Training System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="brand">
+      <div class="mark">⚔</div>
+      <div>
+        <div class="eyebrow">TAEGEOM DIGITAL TRAINING</div>
+        <h1>태권검도 디지털 트레이닝 시스템</h1>
+        <p>정확하게 베고 · 막고 · 찌르고 · 기록한다</p>
+      </div>
+    </div>
+    <div class="stats-strip">
+      <div><span id="totalTime">0분</span><small>누적 수련시간</small></div>
+      <div><span id="totalCount">0회</span><small>누적 수행횟수</small></div>
+      <div><span id="bestScore">0점</span><small>최고 점수</small></div>
+      <div><span id="streak">0</span><small>오늘 연속수련</small></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel menu-panel">
+      <h2>훈련 선택</h2>
+      <div class="cards" id="trainingCards"></div>
+      <div class="level-box">
+        <label for="level">난이도</label>
+        <select id="level">
+          <option value="beginner">초급 · 검선 크게 표시</option>
+          <option value="intermediate">중급 · 검선 좁게 표시</option>
+          <option value="advanced">고급 · 검선 최소 표시</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel arena-panel">
+      <div class="arena-head">
+        <div>
+          <small>현재 훈련</small>
+          <h2 id="currentTitle">정면베기</h2>
+        </div>
+        <div class="score-pill"><span id="score">0</span>점</div>
+      </div>
+
+      <div class="arena" id="arena">
+        <svg class="guide" viewBox="0 0 600 600" aria-label="태권검도 검선 훈련 가이드">
+          <circle cx="300" cy="145" r="58" class="body-line"/>
+          <line x1="300" y1="203" x2="300" y2="440" class="body-line"/>
+          <line x1="220" y1="275" x2="380" y2="275" class="body-line"/>
+          <line x1="300" y1="440" x2="245" y2="555" class="body-line"/>
+          <line x1="300" y1="440" x2="355" y2="555" class="body-line"/>
+          <line id="guideLine" x1="300" y1="65" x2="300" y2="500" class="target-line"/>
+          <path id="arcGuide" d="" class="arc-line"/>
+          <circle id="targetDot" cx="300" cy="500" r="10" class="target-dot"/>
+        </svg>
+        <div class="instruction" id="instruction">검끝이 중앙 검선을 따라 수직으로 내려오도록 연습하세요.</div>
+        <div class="countdown" id="countdown"></div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="primary">훈련 시작</button>
+        <button id="successBtn">정확 수행 +1</button>
+        <button id="missBtn">실수 기록</button>
+        <button id="resetBtn" class="ghost">세션 초기화</button>
+      </div>
+
+      <div class="session-grid">
+        <div><b id="sessionCount">0</b><span>수행</span></div>
+        <div><b id="sessionAccuracy">0%</b><span>정확도</span></div>
+        <div><b id="sessionTime">00:00</b><span>수련시간</span></div>
+        <div><b id="reactionBest">-</b><span>최고 반응</span></div>
+      </div>
+    </section>
+
+    <section class="panel record-panel">
+      <h2>오늘의 수련기록</h2>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span>오늘 목표 100회</span><span id="goalText">0%</span></div>
+        <div class="progress"><div id="goalBar"></div></div>
+      </div>
+      <div id="log" class="log"></div>
+      <button id="exportBtn" class="wide">기록 파일 저장</button>
+      <p class="hint">브라우저에 자동 저장됩니다. 회원 ID 연동은 다음 버전에서 연결할 수 있습니다.</p>
+    </section>
+  </main>
+
+  <footer>
+    <strong>TAEGEOM Training System v1.0</strong>
+    <span>베기 · 막기 · 찌르기 · 반응 · 검선 · 기록</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
